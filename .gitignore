@@ -1,0 +1,50 @@
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]/*/bin/
+[Aa][Rr][Mm]/*/obj/
+**/bin/
+**/obj/
+
+# Visual Studio files
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.sln.ide
+*.sln.ideuser
+
+# Rider files
+.idea/
+*.sln.iml
+*.sln.dotSettings
+*.sln.dotSettings.user
+
+# Visual Studio Code files
+.vscode/
+.history/
+*.code-workspace
+
+# NuGet packages
+*.nupkg
+*.snupkg
+**/packages/*
+**/packages
+
+# Logs
+*.log
+
+# User-specific files
+*.db
+*.pdb
+*.ilk
+*.idb
+*.cache
+
+# Publish output
+publish/
