@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace LatinJobs.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
@@ -18,7 +18,7 @@ namespace LatinJobs.Api.Controllers
             _logger = logger;
         }
 
-        [HttpGet(Name = "GetWeatherForecast")]
+        [HttpGet("get")]
         public async Task<IActionResult> Get()
         {
             var array = Enumerable.Range(1, 5).Select(index => new WeatherForecast
