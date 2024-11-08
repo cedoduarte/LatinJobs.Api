@@ -1,5 +1,8 @@
 using AspNetCoreRateLimit;
+using LatinJobs.Api.Entities;
+using LatinJobs.Api.Entities.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -8,6 +11,8 @@ namespace LatinJobs.Api
 {
     public class Program
     {
+        private const string ConnectionStringName = "LatinJobs";
+
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
@@ -47,6 +52,15 @@ namespace LatinJobs.Api
                     ValidAudience = builder.Configuration["Jwt:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
                 };
+            });
+
+            builder.Services.AddDbContext<IAppDbContext, AppDbContext>(options => 
+            {
+                string dbConnectionString = builder.Configuration.GetConnectionString(ConnectionStringName)!;
+                options.UseSqlServer(dbConnectionString, dbOptions =>
+                {
+                    dbOptions.MigrationsAssembly(typeof(AppDbContext).Assembly.GetName().Name);
+                });
             });
 
             var app = builder.Build();
