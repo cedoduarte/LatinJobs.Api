@@ -8,7 +8,7 @@ namespace LatinJobs.Api.Entities
         public int Id { get; set; }
 
         [Required]
-        public int UsertId { get; set; }
+        public int UserId { get; set; }
 
         [Required]
         public int RoleId { get; set; }
