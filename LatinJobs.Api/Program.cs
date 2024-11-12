@@ -100,7 +100,8 @@ namespace LatinJobs.Api
             {
                 options.AllowAnyHeader()
                        .AllowAnyMethod()
-                       .AllowAnyOrigin();
+                       .AllowAnyOrigin()
+                       .SetPreflightMaxAge(TimeSpan.FromMinutes(10));
             });
 
             using (IServiceScope scope = app.Services.CreateScope())
