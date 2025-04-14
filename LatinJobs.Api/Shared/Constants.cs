@@ -2,7 +2,7 @@
 {
     public static class Constants
     {
-        public const string ConnectionStringName = "LatinJobs";
+        public const string ConnectionStringName = "DefaultConnection";
         public const string DefaultUserPassword = "12345678";
 
         public static class Permissions

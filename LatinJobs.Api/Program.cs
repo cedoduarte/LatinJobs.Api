@@ -79,7 +79,8 @@ namespace LatinJobs.Api
             builder.Services.AddDbContext<IAppDbContext, AppDbContext>(options => 
             {
                 string dbConnectionString = builder.Configuration.GetConnectionString(Constants.ConnectionStringName)!;
-                options.UseSqlServer(dbConnectionString, dbOptions =>
+                var serverVersion = new MariaDbServerVersion(new Version(11, 7, 2)); // MariaDB 11.7.2
+                options.UseMySql(dbConnectionString, serverVersion, dbOptions => 
                 {
                     dbOptions.MigrationsAssembly(typeof(AppDbContext).Assembly.GetName().Name);
                 });
