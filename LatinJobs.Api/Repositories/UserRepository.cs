@@ -31,8 +31,9 @@ namespace LatinJobs.Api.Repositories
         public async Task<User?> FindOneAsync(int id, CancellationToken cancel)
         {
             return await _context.Users
+                .Where(u => u.Id == id)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == id, cancel);
+                .FirstOrDefaultAsync(cancel);
         }
 
         public async Task<User?> UpdateAsync(User user, CancellationToken cancel)
@@ -56,10 +57,27 @@ namespace LatinJobs.Api.Repositories
             return existingUser;
         }
 
+        public async Task<User?> SoftDelete(int id, CancellationToken cancel)
+        {
+            var existingUser = await _context.Users
+                .Where(u => u.Id == id)
+                .FirstOrDefaultAsync(cancel);
+
+            if (existingUser is null)
+            {
+                return null;
+            }
+
+            existingUser.Deleted = DateTime.UtcNow;
+            await _context.SaveChangesAsync(cancel);
+            return existingUser;
+        }
+
         public async Task<User?> RemoveAsync(int id, CancellationToken cancel)
         {
             var foundUser = await _context.Users
-                .FirstOrDefaultAsync(u => u.Id == id, cancel);
+                .Where(u => u.Id == id)
+                .FirstOrDefaultAsync(cancel);
 
             if (foundUser is null)
             {

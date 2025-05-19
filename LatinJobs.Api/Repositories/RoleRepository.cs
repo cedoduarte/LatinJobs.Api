@@ -30,8 +30,17 @@ namespace LatinJobs.Api.Repositories
         public async Task<Role?> FindOneAsync(int id, CancellationToken cancel)
         {
             return await _context.Roles
+                .Where(r => r.Id == id)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(r => r.Id == id, cancel);
+                .FirstOrDefaultAsync(cancel);
+        }
+
+        public async Task<Role?> FindOneAsync(string name, CancellationToken cancel)
+        {
+            return await _context.Roles
+                .Where(r => string.Equals(r.Name, name))
+                .AsNoTracking()
+                .FirstOrDefaultAsync(cancel);
         }
 
         public async Task<Role?> UpdateAsync(Role role, CancellationToken cancel)
@@ -48,6 +57,22 @@ namespace LatinJobs.Api.Repositories
             existingRole.Name = role.Name;
             existingRole.Updated = DateTime.UtcNow;
 
+            await _context.SaveChangesAsync(cancel);
+            return existingRole;
+        }
+
+        public async Task<Role?> SoftDelete(int id, CancellationToken cancel)
+        {
+            var existingRole = await _context.Roles
+                .Where(r => r.Id == id)
+                .FirstOrDefaultAsync(cancel);
+
+            if (existingRole is null)
+            {
+                return null;
+            }
+
+            existingRole.Deleted = DateTime.UtcNow;
             await _context.SaveChangesAsync(cancel);
             return existingRole;
         }

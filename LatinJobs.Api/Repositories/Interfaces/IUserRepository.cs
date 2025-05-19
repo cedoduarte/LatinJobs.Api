@@ -8,6 +8,7 @@ namespace LatinJobs.Api.Repositories.Interfaces
         Task<IEnumerable<User>> FindAllAsync(CancellationToken cancel = default);
         Task<User?> FindOneAsync(int id, CancellationToken cancel = default);
         Task<User?> UpdateAsync(User user, CancellationToken cancel = default);
+        Task<User?> SoftDelete(int id, CancellationToken cancel = default);
         Task<User?> RemoveAsync(int id, CancellationToken cancel = default);
     }
 }

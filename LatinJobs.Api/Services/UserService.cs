@@ -52,5 +52,93 @@ namespace LatinJobs.Api.Services
                 Email = createdUser.Email
             };
         }
+
+        public async Task<IEnumerable<UserViewModel>> FindAllAsync(CancellationToken cancel)
+        {
+            var users = await _userRepository.FindAllAsync(cancel);
+            return users.Select(user => new UserViewModel 
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email
+            });
+        }
+
+        public async Task<UserViewModel?> FindOneAsync(int id, CancellationToken cancel)
+        {
+            var user = await _userRepository.FindOneAsync(id, cancel);
+            if (user is null)
+            {
+                return null;
+            }
+
+            return new UserViewModel
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email
+            };
+        }
+
+        public async Task<UserViewModel?> UpdateAsync(UpdateUserDto updateUserDto, CancellationToken cancel)
+        {
+            var existingUser = new User
+            {
+                Id = updateUserDto.Id ?? 0,
+                FirstName = updateUserDto.FirstName!.Trim(),
+                LastName = updateUserDto.LastName!.Trim(),
+                Email = updateUserDto.Email!.Trim()
+            };
+
+            var updatedUser = await _userRepository.UpdateAsync(existingUser, cancel);
+            if (updatedUser is null)
+            {
+                return null;
+            }
+
+            return new UserViewModel
+            {
+                Id = updatedUser.Id,
+                FirstName = updatedUser.FirstName,
+                LastName = updatedUser.LastName,
+                Email = updatedUser.Email
+            };
+        }
+
+        public async Task<UserViewModel?> SoftDelete(int id, CancellationToken cancel)
+        {
+            var softDeletedUser = await _userRepository.SoftDelete(id, cancel);
+            if (softDeletedUser is null)
+            {
+                return null;
+            }
+
+            return new UserViewModel
+            {
+                Id = softDeletedUser.Id,
+                FirstName = softDeletedUser.FirstName,
+                LastName = softDeletedUser.LastName,
+                Email = softDeletedUser.Email
+            };
+        }
+
+        public async Task<UserViewModel?> RemoveAsync(int id, CancellationToken cancel)
+        {
+            var removedUser = await _userRepository.RemoveAsync(id, cancel);
+            if (removedUser is null)
+            {
+                return null;
+            }
+
+            return new UserViewModel
+            {
+                Id = removedUser.Id,
+                FirstName = removedUser.FirstName,
+                LastName = removedUser.LastName,
+                Email = removedUser.Email
+            };
+        }
     }
 }
