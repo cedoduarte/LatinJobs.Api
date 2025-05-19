@@ -3,6 +3,10 @@ using LatinJobs.Api.Entities;
 using LatinJobs.Api.Entities.Interfaces;
 using LatinJobs.Api.Middlewares;
 using LatinJobs.Api.Models;
+using LatinJobs.Api.Repositories;
+using LatinJobs.Api.Repositories.Interfaces;
+using LatinJobs.Api.Services;
+using LatinJobs.Api.Services.Interfaces;
 using LatinJobs.Api.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -75,6 +79,14 @@ namespace LatinJobs.Api
                 };
             });
 
+            // Repositories
+            builder.Services.AddTransient<IUserRepository, UserRepository>();
+            builder.Services.AddTransient<IRoleRepository, RoleRepository>();
+            builder.Services.AddTransient<IUserRoleRepository, UserRoleRepository>();
+
+            // Services
+            builder.Services.AddTransient<IUserService, UserService>();
+
             // DB Context
             builder.Services.AddDbContext<IAppDbContext, AppDbContext>(options => 
             {
@@ -105,6 +117,7 @@ namespace LatinJobs.Api
                        .SetPreflightMaxAge(TimeSpan.FromMinutes(10));
             });
 
+            // Data seeding
             using (IServiceScope scope = app.Services.CreateScope())
             {
                 try
@@ -127,9 +140,15 @@ namespace LatinJobs.Api
             }
 
             app.UseLogger();
+
             app.UseHttpsRedirection();
+
+            app.UseAuthentication();
+
             app.UseAuthorization();
+
             app.MapControllers();
+
             app.Run();
         }
     }
