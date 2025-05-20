@@ -5,6 +5,7 @@ using LatinJobs.Api.Repositories.Interfaces;
 using LatinJobs.Api.Services.Interfaces;
 using LatinJobs.Api.Shared;
 using LatinJobs.Api.ViewModels;
+using Mapster;
 
 namespace LatinJobs.Api.Services
 {
@@ -44,25 +45,13 @@ namespace LatinJobs.Api.Services
                 RoleId = foundRole!.Id
             });
 
-            return new UserViewModel
-            {
-                Id = createdUser.Id,
-                FirstName = createdUser.FirstName,
-                LastName = createdUser.LastName,
-                Email = createdUser.Email
-            };
+            return createdUser.Adapt<UserViewModel>();
         }
 
         public async Task<IEnumerable<UserViewModel>> FindAllAsync(CancellationToken cancel)
         {
             var users = await _userRepository.FindAllAsync(cancel);
-            return users.Select(user => new UserViewModel 
-            {
-                Id = user.Id,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email
-            });
+            return users.Adapt<IEnumerable<UserViewModel>>();
         }
 
         public async Task<UserViewModel?> FindOneAsync(int id, CancellationToken cancel)
@@ -72,14 +61,7 @@ namespace LatinJobs.Api.Services
             {
                 throw new NotFoundException($"User Not Found, ID = {id}");
             }
-
-            return new UserViewModel
-            {
-                Id = user.Id,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email
-            };
+            return user.Adapt<UserViewModel>();
         }
 
         public async Task<UserViewModel?> FindOneByEmailAsync(string email, CancellationToken cancel)
@@ -89,14 +71,7 @@ namespace LatinJobs.Api.Services
             {
                 throw new NotFoundException($"User Not Found, Email = {email}");
             }
-
-            return new UserViewModel 
-            {
-                Id = user.Id,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email
-            };
+            return user.Adapt<UserViewModel>();
         }
 
         public async Task<UserViewModel?> UpdateAsync(UpdateUserDto updateUserDto, CancellationToken cancel)
@@ -115,14 +90,7 @@ namespace LatinJobs.Api.Services
             {
                 throw new NotFoundException($"User Not Found, ID = {updateUserDto.Id}");
             }
-
-            return new UserViewModel
-            {
-                Id = updatedUser.Id,
-                FirstName = updatedUser.FirstName,
-                LastName = updatedUser.LastName,
-                Email = updatedUser.Email
-            };
+            return updatedUser.Adapt<UserViewModel>();
         }
 
         public async Task<UserViewModel?> SoftDeleteAsync(int id, CancellationToken cancel)
@@ -132,14 +100,7 @@ namespace LatinJobs.Api.Services
             {
                 throw new NotFoundException($"User Not Found, ID = {id}");
             }
-
-            return new UserViewModel
-            {
-                Id = softDeletedUser.Id,
-                FirstName = softDeletedUser.FirstName,
-                LastName = softDeletedUser.LastName,
-                Email = softDeletedUser.Email
-            };
+            return softDeletedUser.Adapt<UserViewModel>();
         }
 
         public async Task<UserViewModel?> RemoveAsync(int id, CancellationToken cancel)
@@ -149,14 +110,7 @@ namespace LatinJobs.Api.Services
             {
                 throw new NotFoundException($"User Not Found, ID = {id}");
             }
-
-            return new UserViewModel
-            {
-                Id = removedUser.Id,
-                FirstName = removedUser.FirstName,
-                LastName = removedUser.LastName,
-                Email = removedUser.Email
-            };
+            return removedUser.Adapt<UserViewModel>();
         }
     }
 }

@@ -9,38 +9,38 @@ namespace LatinJobs.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class PermissionController : Controller
+    public class JobController : Controller
     {
-        private readonly IPermissionService _permissionService;
+        private readonly IJobService _jobService;
         private readonly IHasPermissionService _hasPermissionService;
 
-        public PermissionController(IPermissionService permissionService,
+        public JobController(IJobService jobService,
             IHasPermissionService hasPermissionService)
         {
-            _permissionService = permissionService;
+            _jobService = jobService;
             _hasPermissionService = hasPermissionService;
         }
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Create([FromBody] CreatePermissionDto createPermissionDto, CancellationToken cancel)
+        public async Task<IActionResult> Create([FromBody] CreateJobDto createJobDto, CancellationToken cancel)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            try
+            try 
             {
                 if (await _hasPermissionService.HasPermissionAsync(
                     User.FindFirst(Constants.Jwt.UserIdClaim)!.Value,
                     Constants.Permissions.Write, cancel))
                 {
-                    var createdPermissionViewModel = await _permissionService.CreateAsync(createPermissionDto, cancel);
-                    return CreatedAtAction(nameof(FindOne), new { id = createdPermissionViewModel.Id }, createdPermissionViewModel);
+                    var createdJobViewModel = await _jobService.CreateAsync(createJobDto, cancel);
+                    return CreatedAtAction(nameof(FindOne), new { id = createdJobViewModel.Id }, createdJobViewModel);
                 }
                 else
                 {
-                    return Forbid("You do not have permission to create a permission.");
+                    return Forbid("You do not have permission to create a job.");
                 }
             }
             catch (Exception ex)
@@ -54,17 +54,17 @@ namespace LatinJobs.Api.Controllers
         [Authorize]
         public async Task<IActionResult> FindAll(CancellationToken cancel)
         {
-            try
+            try 
             {
                 if (await _hasPermissionService.HasPermissionAsync(
                     User.FindFirst(Constants.Jwt.UserIdClaim)!.Value,
                     Constants.Permissions.Read, cancel))
                 {
-                    return Ok(await _permissionService.FindAllAsync(cancel));
+                    return Ok(await _jobService.FindAllAsync(cancel));
                 }
-                else
+                else 
                 {
-                    return Forbid("You do not have permission to read permissions.");
+                    return Forbid("You do not have permission to read jobs.");
                 }
             }
             catch (Exception ex)
@@ -83,12 +83,12 @@ namespace LatinJobs.Api.Controllers
                 if (await _hasPermissionService.HasPermissionAsync(
                     User.FindFirst(Constants.Jwt.UserIdClaim)!.Value,
                     Constants.Permissions.Read, cancel))
-                {
-                    return Ok(await _permissionService.FindOneAsync(id, cancel));
+                { 
+                    return Ok(await _jobService.FindOneAsync(id, cancel));
                 }
                 else
                 {
-                    return Forbid("You do not have permission to read this resource.");
+                    return Forbid("You do not have permission to read this job.");
                 }
             }
             catch (NotFoundException ex)
@@ -104,23 +104,24 @@ namespace LatinJobs.Api.Controllers
 
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult?> Update([FromBody] UpdatePermissionDto udatePermissionDto, CancellationToken cancel)
+        public async Task<IActionResult> Update([FromBody] UpdateJobDto updateJobDto, CancellationToken cancel)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            try
+            try 
             {
                 if (await _hasPermissionService.HasPermissionAsync(
                     User.FindFirst(Constants.Jwt.UserIdClaim)!.Value,
-                    Constants.Permissions.Edit, cancel))
+                    Constants.Permissions.Write, cancel))
                 {
-                    return Ok(await _permissionService.UpdateAsync(udatePermissionDto, cancel));
+                    var updatedJobViewModel = await _jobService.UpdateAsync(updateJobDto, cancel);
+                    return Ok(updatedJobViewModel);
                 }
                 else
                 {
-                    return Forbid("You do not have permission to update a permission.");
+                    return Forbid("You do not have permission to update this job.");
                 }
             }
             catch (NotFoundException ex)
@@ -130,7 +131,7 @@ namespace LatinJobs.Api.Controllers
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                 $"An unexpected error occurred. Please try again later. {ex.Message}");
+                    $"An unexpected error occurred. Please try again later. {ex.Message}");
             }
         }
 
@@ -144,11 +145,11 @@ namespace LatinJobs.Api.Controllers
                     User.FindFirst(Constants.Jwt.UserIdClaim)!.Value,
                     Constants.Permissions.Delete, cancel))
                 {
-                    return Ok(await _permissionService.SoftDeleteAsync(id, cancel));
+                    return Ok(await _jobService.SoftDeleteAsync(id, cancel));
                 }
                 else
                 {
-                    return Forbid("You do not have permission to delete a permission.");
+                    return Forbid("You do not have permission to delete this job.");
                 }
             }
             catch (NotFoundException ex)
@@ -158,7 +159,7 @@ namespace LatinJobs.Api.Controllers
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                 $"An unexpected error occurred. Please try again later. {ex.Message}");
+                    $"An unexpected error occurred. Please try again later. {ex.Message}");
             }
         }
 
@@ -172,11 +173,11 @@ namespace LatinJobs.Api.Controllers
                     User.FindFirst(Constants.Jwt.UserIdClaim)!.Value,
                     Constants.Permissions.Delete, cancel))
                 {
-                    return Ok(await _permissionService.RemoveAsync(id, cancel));
+                    return Ok(await _jobService.RemoveAsync(id, cancel));
                 }
                 else
                 {
-                    return Forbid("You do not have permission to delete a permission.");
+                    return Forbid("You do not have permission to delete this job.");
                 }
             }
             catch (NotFoundException ex)
@@ -186,7 +187,7 @@ namespace LatinJobs.Api.Controllers
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                 $"An unexpected error occurred. Please try again later. {ex.Message}");
+                    $"An unexpected error occurred. Please try again later. {ex.Message}");
             }
         }
     }

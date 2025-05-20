@@ -1,6 +1,7 @@
 using AspNetCoreRateLimit;
 using LatinJobs.Api.Entities;
 using LatinJobs.Api.Entities.Interfaces;
+using LatinJobs.Api.Mapping;
 using LatinJobs.Api.Middlewares;
 using LatinJobs.Api.Models;
 using LatinJobs.Api.Repositories;
@@ -79,6 +80,9 @@ namespace LatinJobs.Api
                 };
             });
 
+            // Mapping rules
+            MappingConfig.RegisterMappings();
+
             // Repositories
             builder.Services.AddTransient<IUserRepository, UserRepository>();
             builder.Services.AddTransient<IRoleRepository, RoleRepository>();
@@ -86,6 +90,7 @@ namespace LatinJobs.Api
             builder.Services.AddTransient<IPermissionRepository, PermissionRepository>();
             builder.Services.AddTransient<IRolePermissionRepository, RolePermissionRepository>();
             builder.Services.AddTransient<IUserAuthenticationRepository, UserAuthenticationRepository>();
+            builder.Services.AddTransient<IJobRepository, JobRepository>();
 
             // Services
             builder.Services.AddTransient<IJwtService, JwtService>();
@@ -96,6 +101,7 @@ namespace LatinJobs.Api
             builder.Services.AddTransient<IPermissionService, PermissionService>();
             builder.Services.AddTransient<IRolePermissionService, RolePermissionService>();
             builder.Services.AddTransient<IUserAuthenticationService, UserAuthenticationService>();
+            builder.Services.AddTransient<IJobService, JobService>();
 
             // DB Context
             builder.Services.AddDbContext<IAppDbContext, AppDbContext>(options => 

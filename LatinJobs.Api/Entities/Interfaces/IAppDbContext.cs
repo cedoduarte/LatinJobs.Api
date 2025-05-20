@@ -10,5 +10,6 @@ namespace LatinJobs.Api.Entities.Interfaces
         DbSet<RolePermission> RolePermissions { get; }
         DbSet<User> Users { get; }
         DbSet<UserRole> UserRoles { get; }
+        DbSet<Job> Jobs { get; }
     }
 }

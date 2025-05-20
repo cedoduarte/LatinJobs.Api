@@ -4,6 +4,7 @@ using LatinJobs.Api.Exceptions;
 using LatinJobs.Api.Repositories.Interfaces;
 using LatinJobs.Api.Services.Interfaces;
 using LatinJobs.Api.ViewModels;
+using Mapster;
 
 namespace LatinJobs.Api.Services
 {
@@ -22,22 +23,13 @@ namespace LatinJobs.Api.Services
             {
                 Name = createRoleDto.Name!.Trim()
             }, cancel);
-
-            return new RoleViewModel
-            {
-                Id = createdRole.Id,
-                Name = createdRole.Name
-            };
+            return createdRole.Adapt<RoleViewModel>();
         }
 
         public async Task<IEnumerable<RoleViewModel>> FindAllAsync(CancellationToken cancel)
         {
             var roles = await _roleRepository.FindAllAsync(cancel);
-            return roles.Select(role => new RoleViewModel
-            {
-                Id = role.Id,
-                Name = role.Name
-            });
+            return roles.Adapt<IEnumerable<RoleViewModel>>();
         }
 
         public async Task<RoleViewModel?> FindOneAsync(int id, CancellationToken cancel)
@@ -47,12 +39,7 @@ namespace LatinJobs.Api.Services
             {
                 throw new NotFoundException($"Role Not Found, ID = {id}");
             }
-
-            return new RoleViewModel
-            {
-                Id = role.Id,
-                Name = role.Name
-            };
+            return role.Adapt<RoleViewModel>();
         }
 
         public async Task<RoleViewModel?> FindOneAsync(string name, CancellationToken cancel)
@@ -62,12 +49,7 @@ namespace LatinJobs.Api.Services
             {
                 throw new NotFoundException($"Role Not Found, Name = {name}");
             }
-
-            return new RoleViewModel
-            {
-                Id = role.Id,
-                Name = role.Name
-            };
+            return role.Adapt<RoleViewModel>();
         }
 
         public async Task<RoleViewModel?> UpdateAsync(UpdateRoleDto updateRoleDto, CancellationToken cancel)
@@ -84,11 +66,7 @@ namespace LatinJobs.Api.Services
                 throw new NotFoundException($"Role Not Found, ID = {existingRole.Id}");
             }
 
-            return new RoleViewModel
-            {
-                Id = updatedRole.Id,
-                Name = updatedRole.Name
-            };
+            return updatedRole.Adapt<RoleViewModel>();
         }
 
         public async Task<RoleViewModel?> SoftDeleteAsync(int id, CancellationToken cancel)
@@ -98,12 +76,7 @@ namespace LatinJobs.Api.Services
             {
                 throw new NotFoundException($"Role Not Found, ID = {id}");
             }
-
-            return new RoleViewModel
-            {
-                Id = softDeletedRole.Id,
-                Name = softDeletedRole.Name
-            };
+            return softDeletedRole.Adapt<RoleViewModel>();
         }
 
         public async Task<RoleViewModel?> RemoveAsync(int id, CancellationToken cancel)
@@ -113,12 +86,7 @@ namespace LatinJobs.Api.Services
             {
                 throw new NotFoundException($"Role Not Found, ID = {id}");
             }
-
-            return new RoleViewModel
-            {
-                Id = removedRole.Id,
-                Name = removedRole.Name
-            };
+            return removedRole.Adapt<RoleViewModel>();
         }
     }
 }

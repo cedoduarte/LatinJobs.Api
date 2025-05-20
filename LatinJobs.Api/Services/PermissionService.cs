@@ -4,6 +4,7 @@ using LatinJobs.Api.Exceptions;
 using LatinJobs.Api.Repositories.Interfaces;
 using LatinJobs.Api.Services.Interfaces;
 using LatinJobs.Api.ViewModels;
+using Mapster;
 
 namespace LatinJobs.Api.Services
 {
@@ -18,26 +19,17 @@ namespace LatinJobs.Api.Services
 
         public async Task<PermissionViewModel> CreateAsync(CreatePermissionDto createPermissionDto, CancellationToken cancel)
         {
-            var createdPermission = await _permissionRepository.CreateAsync(new Entities.Permission
+            var createdPermission = await _permissionRepository.CreateAsync(new Permission
             {
                 Name = createPermissionDto.Name!.Trim()
             }, cancel);
-
-            return new PermissionViewModel
-            {
-                Id = createdPermission.Id,
-                Name = createdPermission.Name
-            };
+            return createdPermission.Adapt<PermissionViewModel>();
         }
 
         public async Task<IEnumerable<PermissionViewModel>> FindAllAsync(CancellationToken cancel)
         {
             var permissions = await _permissionRepository.FindAllAsync(cancel);
-            return permissions.Select(permission => new PermissionViewModel 
-            {
-                Id = permission.Id,
-                Name = permission.Name
-            });
+            return permissions.Adapt<IEnumerable<PermissionViewModel>>();
         }
 
         public async Task<PermissionViewModel?> FindOneAsync(int id, CancellationToken cancel)
@@ -47,12 +39,7 @@ namespace LatinJobs.Api.Services
             {
                 throw new NotFoundException($"Permission Not Found, ID = {id}");
             }
-
-            return new PermissionViewModel
-            {
-                Id = permission.Id,
-                Name = permission.Name
-            };
+            return permission.Adapt<PermissionViewModel>();
         }
 
         public async Task<PermissionViewModel?> UpdateAsync(UpdatePermissionDto udatePermissionDto, CancellationToken cancel)
@@ -68,27 +55,17 @@ namespace LatinJobs.Api.Services
             {
                 throw new NotFoundException($"Permission Not Found, ID = {udatePermissionDto.Id}");
             }
-
-            return new PermissionViewModel
-            {
-                Id = updatedPermission.Id,
-                Name = updatedPermission.Name
-            };
+            return updatedPermission.Adapt<PermissionViewModel>();
         }
 
-        public async Task<PermissionViewModel?> SoftDelete(int id, CancellationToken cancel)
+        public async Task<PermissionViewModel?> SoftDeleteAsync(int id, CancellationToken cancel)
         {
             var softDeletedPermission = await _permissionRepository.SoftDelete(id, cancel);
             if (softDeletedPermission is null)
             {
                 throw new NotFoundException($"Permission Not Found, ID = {id}");
             }
-
-            return new PermissionViewModel
-            {
-                Id = softDeletedPermission.Id,
-                Name = softDeletedPermission.Name
-            };
+            return softDeletedPermission.Adapt<PermissionViewModel>();
         }
 
         public async Task<PermissionViewModel?> RemoveAsync(int id, CancellationToken cancel)
@@ -98,12 +75,7 @@ namespace LatinJobs.Api.Services
             {
                 throw new NotFoundException($"Permission Not Found, ID = {id}");
             }
-
-            return new PermissionViewModel
-            {
-                Id = removedPermission.Id,
-                Name = removedPermission.Name
-            };
+            return removedPermission.Adapt<PermissionViewModel>();
         }
     }
 }

@@ -4,6 +4,7 @@ using LatinJobs.Api.Exceptions;
 using LatinJobs.Api.Repositories.Interfaces;
 using LatinJobs.Api.Services.Interfaces;
 using LatinJobs.Api.ViewModels;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
 
 namespace LatinJobs.Api.Services
@@ -67,45 +68,29 @@ namespace LatinJobs.Api.Services
                 .AsNoTracking()
                 .FirstOrDefaultAsync(cancel);
 
-            return new RolePermissionViewModel
-            {
-                Id = fullRolePermission!.Id,
-                RoleId = fullRolePermission.RoleId,
-                PermissionId = fullRolePermission.PermissionId,
-                RoleName = fullRolePermission.Role!.Name,
-                PermissionName = fullRolePermission.Permission!.Name
-            };
+            return fullRolePermission.Adapt<RolePermissionViewModel>();
         }
 
         public async Task<IEnumerable<RolePermissionViewModel>> FindAllAsync(CancellationToken cancel)
         {
-            return await _context.RolePermissions
+            var rolePermissions = await _context.RolePermissions
                 .Include(x => x.Role)
                 .Include(x => x.Permission)
                 .AsNoTracking()
-                .Select(x => new RolePermissionViewModel
-                {
-                    Id = x.Id,
-                    RoleId = x.RoleId,
-                    PermissionId = x.PermissionId,
-                    RoleName = x.Role!.Name,
-                    PermissionName = x.Permission!.Name
-                })
                 .ToListAsync(cancel);
+
+            return rolePermissions.Adapt<IEnumerable<RolePermissionViewModel>>();
         }
 
         public async Task<IEnumerable<PermissionViewModel>> GetPermissions(int roleId, CancellationToken cancel)
         {
-            return await _context.RolePermissions
+            var permissions = await _context.RolePermissions
                 .Where(x => x.RoleId == roleId)
                 .AsNoTracking()
                 .Select(x => x.Permission)
-                .Select(x => new PermissionViewModel
-                {
-                    Id = x!.Id,
-                    Name = x.Name
-                })
                 .ToListAsync(cancel);
+
+            return permissions.Adapt<IEnumerable<PermissionViewModel>>();
         }
 
         public async Task<RolePermissionViewModel> RemoveAsync(int roleId, int permissionId, CancellationToken cancel)
@@ -123,15 +108,7 @@ namespace LatinJobs.Api.Services
             }
 
             await _rolePermissionRepository.RemoveAsync(foundRolePermission.Id, cancel);
-
-            return new RolePermissionViewModel
-            {
-                Id = foundRolePermission.Id,
-                RoleId = foundRolePermission.RoleId,
-                PermissionId = foundRolePermission.PermissionId,
-                RoleName = foundRolePermission.Role!.Name,
-                PermissionName = foundRolePermission.Permission!.Name
-            };
+            return foundRolePermission.Adapt<RolePermissionViewModel>();
         }
     }
 }
