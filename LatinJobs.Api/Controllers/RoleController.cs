@@ -9,20 +9,21 @@ namespace LatinJobs.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UserController : Controller
+    public class RoleController : Controller
     {
-        private readonly IUserService _userService;
+        private readonly IRoleService _roleService;
         private readonly IHasPermissionService _hasPermissionService;
 
-        public UserController(IUserService userService,
+        public RoleController(IRoleService roleService,
             IHasPermissionService hasPermissionService)
         {
-            _userService = userService;
+            _roleService = roleService;
             _hasPermissionService = hasPermissionService;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateUserDto createUserDto, CancellationToken cancel) 
+        [Authorize]
+        public async Task<IActionResult> Create([FromBody] CreateRoleDto createRoleDto, CancellationToken cancel)
         {
             if (!ModelState.IsValid)
             {
@@ -30,17 +31,22 @@ namespace LatinJobs.Api.Controllers
             }
             try
             {
-                var createdUserViewModel = await _userService.CreateAsync(createUserDto, cancel);
-                return CreatedAtAction(nameof(FindOne), new { id = createdUserViewModel.Id }, createdUserViewModel);
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex.Message);
+                if (await _hasPermissionService.HasPermissionAsync(
+                    User.FindFirst(Constants.Jwt.UserIdClaim)!.Value,
+                    Constants.Permissions.Write, cancel))
+                {
+                    var createdRoleViewModel = await _roleService.CreateAsync(createRoleDto, cancel);
+                    return CreatedAtAction(nameof(FindOne), new { id = createdRoleViewModel.Id }, createdRoleViewModel);
+                }
+                else
+                {
+                    return Forbid("You do not have permission to create a role.");
+                }
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, 
-                    $"An unexpected error occurred. Please try again later. {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                 $"An unexpected error occurred. Please try again later. {ex.Message}");
             }
         }
 
@@ -48,13 +54,13 @@ namespace LatinJobs.Api.Controllers
         [Authorize]
         public async Task<IActionResult> FindAll(CancellationToken cancel)
         {
-            try 
+            try
             {
                 if (await _hasPermissionService.HasPermissionAsync(
                     User.FindFirst(Constants.Jwt.UserIdClaim)!.Value,
                     Constants.Permissions.Read, cancel))
                 {
-                    return Ok(await _userService.FindAllAsync(cancel));
+                    return Ok(await _roleService.FindAllAsync(cancel));
                 }
                 else
                 {
@@ -63,22 +69,22 @@ namespace LatinJobs.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, 
+                return StatusCode(StatusCodes.Status500InternalServerError,
                     $"An unexpected error occurred. Please try again later. {ex.Message}");
             }
         }
 
-        [HttpGet("find-by-id/{id}")]
+        [HttpGet("{id}")]
         [Authorize]
         public async Task<IActionResult> FindOne([FromRoute] int id, CancellationToken cancel)
         {
-            try
+            try 
             {
                 if (await _hasPermissionService.HasPermissionAsync(
-                    User.FindFirst(Constants.Jwt.UserIdClaim)!.Value,
+                    User.FindFirst(Constants.Jwt.UserIdClaim)!.Value, 
                     Constants.Permissions.Read, cancel))
                 {
-                    return Ok(await _userService.FindOneAsync(id, cancel));
+                    return Ok(await _roleService.FindOneAsync(id, cancel));
                 }
                 else
                 {
@@ -96,9 +102,9 @@ namespace LatinJobs.Api.Controllers
             }
         }
 
-        [HttpGet("find-by-email/{email}")]
+        [HttpGet("name/{name}")]
         [Authorize]
-        public async Task<IActionResult> FindOneByEmail([FromRoute] string email, CancellationToken cancel)
+        public async Task<IActionResult> FindOne([FromRoute] string name, CancellationToken cancel)
         {
             try
             {
@@ -106,7 +112,7 @@ namespace LatinJobs.Api.Controllers
                     User.FindFirst(Constants.Jwt.UserIdClaim)!.Value,
                     Constants.Permissions.Read, cancel))
                 {
-                    return Ok(await _userService.FindOneByEmailAsync(email, cancel));
+                    return Ok(await _roleService.FindOneAsync(name, cancel));
                 }
                 else
                 {
@@ -126,19 +132,19 @@ namespace LatinJobs.Api.Controllers
 
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> Update([FromBody] UpdateUserDto updateUserDto, CancellationToken cancel)
-        { 
+        public async Task<IActionResult> Update([FromBody] UpdateRoleDto updateRoleDto, CancellationToken cancel)
+        {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            try
+            try 
             {
                 if (await _hasPermissionService.HasPermissionAsync(
-                    User.FindFirst(Constants.Jwt.UserIdClaim)!.Value, 
+                    User.FindFirst(Constants.Jwt.UserIdClaim)!.Value,
                     Constants.Permissions.Edit, cancel))
                 {
-                    return Ok(await _userService.UpdateAsync(updateUserDto, cancel));
+                    return Ok(await _roleService.UpdateAsync(updateRoleDto, cancel));
                 }
                 else
                 {
@@ -151,7 +157,7 @@ namespace LatinJobs.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, 
+                return StatusCode(StatusCodes.Status500InternalServerError,
                     $"An unexpected error occurred. Please try again later. {ex.Message}");
             }
         }
@@ -163,10 +169,10 @@ namespace LatinJobs.Api.Controllers
             try
             {
                 if (await _hasPermissionService.HasPermissionAsync(
-                    User.FindFirst(Constants.Jwt.UserIdClaim)!.Value, 
+                    User.FindFirst(Constants.Jwt.UserIdClaim)!.Value,
                     Constants.Permissions.Delete, cancel))
                 {
-                    return Ok(await _userService.SoftDeleteAsync(id, cancel));
+                    return Ok(await _roleService.SoftDeleteAsync(id, cancel));
                 }
                 else
                 {
@@ -178,15 +184,15 @@ namespace LatinJobs.Api.Controllers
                 return NotFound(ex.Message);
             }
             catch (Exception ex)
-            { 
-                return StatusCode(StatusCodes.Status500InternalServerError, 
-                    $"An unexpected error occurred. Please try again later. {ex.Message}"); 
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    $"An unexpected error occurred. Please try again later. {ex.Message}");
             }
         }
 
         [HttpDelete("hard/{id}")]
         [Authorize]
-        public async Task<IActionResult?> Remove([FromRoute] int id, CancellationToken cancel)
+        public async Task<IActionResult> Remove([FromRoute] int id, CancellationToken cancel)
         {
             try
             {
@@ -194,7 +200,7 @@ namespace LatinJobs.Api.Controllers
                     User.FindFirst(Constants.Jwt.UserIdClaim)!.Value,
                     Constants.Permissions.Delete, cancel))
                 {
-                    return Ok(await _userService.RemoveAsync(id, cancel));
+                    return Ok(await _roleService.RemoveAsync(id, cancel));
                 }
                 else
                 {
@@ -207,7 +213,7 @@ namespace LatinJobs.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, 
+                return StatusCode(StatusCodes.Status500InternalServerError,
                     $"An unexpected error occurred. Please try again later. {ex.Message}");
             }
         }

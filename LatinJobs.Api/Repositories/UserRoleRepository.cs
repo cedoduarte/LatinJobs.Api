@@ -23,6 +23,8 @@ namespace LatinJobs.Api.Repositories
         public async Task<IEnumerable<UserRole>> FindAllAsync(CancellationToken cancel)
         {
             return await _context.UserRoles
+                .Include(ur => ur.User)
+                .Include(ur => ur.Role)
                 .AsNoTracking()
                 .ToListAsync(cancel);
         }
@@ -31,6 +33,8 @@ namespace LatinJobs.Api.Repositories
         {
             var foundUserRole = await _context.UserRoles
                 .Where(ur => ur.UserId == userId)
+                .Include(ur => ur.User)
+                .Include(ur => ur.Role)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(cancel);
 
@@ -41,6 +45,8 @@ namespace LatinJobs.Api.Repositories
         {
             var existingUserRole = await _context.UserRoles
                 .Where(ur => ur.Id == userRole.Id)
+                .Include(ur => ur.User)
+                .Include(ur => ur.Role)
                 .FirstOrDefaultAsync(cancel);
 
             if (existingUserRole is null)
@@ -59,6 +65,8 @@ namespace LatinJobs.Api.Repositories
         {
             var foundUserRole = await _context.UserRoles
                 .Where(ur => ur.UserId == userId)
+                .Include(ur => ur.User)
+                .Include(ur => ur.Role)
                 .FirstOrDefaultAsync(cancel);
             
             if (foundUserRole is null)

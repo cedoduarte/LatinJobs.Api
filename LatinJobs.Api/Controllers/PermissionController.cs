@@ -9,20 +9,21 @@ namespace LatinJobs.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UserController : Controller
+    public class PermissionController : Controller
     {
-        private readonly IUserService _userService;
+        private readonly IPermissionService _permissionService;
         private readonly IHasPermissionService _hasPermissionService;
 
-        public UserController(IUserService userService,
+        public PermissionController(IPermissionService permissionService,
             IHasPermissionService hasPermissionService)
         {
-            _userService = userService;
+            _permissionService = permissionService;
             _hasPermissionService = hasPermissionService;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateUserDto createUserDto, CancellationToken cancel) 
+        [Authorize]
+        public async Task<IActionResult> Create([FromBody] CreatePermissionDto createPermissionDto, CancellationToken cancel)
         {
             if (!ModelState.IsValid)
             {
@@ -30,17 +31,22 @@ namespace LatinJobs.Api.Controllers
             }
             try
             {
-                var createdUserViewModel = await _userService.CreateAsync(createUserDto, cancel);
-                return CreatedAtAction(nameof(FindOne), new { id = createdUserViewModel.Id }, createdUserViewModel);
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex.Message);
+                if (await _hasPermissionService.HasPermissionAsync(
+                    User.FindFirst(Constants.Jwt.UserIdClaim)!.Value,
+                    Constants.Permissions.Write, cancel))
+                {
+                    var createdPermissionViewModel = await _permissionService.CreateAsync(createPermissionDto, cancel);
+                    return CreatedAtAction(nameof(FindOne), new { id = createdPermissionViewModel.Id }, createdPermissionViewModel);
+                }
+                else
+                {
+                    return Forbid("You do not have permission to create a permission.");
+                }
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, 
-                    $"An unexpected error occurred. Please try again later. {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                 $"An unexpected error occurred. Please try again later. {ex.Message}");
             }
         }
 
@@ -48,37 +54,37 @@ namespace LatinJobs.Api.Controllers
         [Authorize]
         public async Task<IActionResult> FindAll(CancellationToken cancel)
         {
+            try
+            {
+                if (await _hasPermissionService.HasPermissionAsync(
+                    User.FindFirst(Constants.Jwt.UserIdClaim)!.Value,
+                    Constants.Permissions.Read, cancel))
+                {
+                    return Ok(await _permissionService.FindAllAsync(cancel));
+                }
+                else
+                {
+                    return Forbid("You do not have permission to read permissions.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                 $"An unexpected error occurred. Please try again later. {ex.Message}");
+            }
+        }
+
+        [HttpGet("{id}")]
+        [Authorize]
+        public async Task<IActionResult> FindOne([FromRoute] int id, CancellationToken cancel)
+        {
             try 
             {
                 if (await _hasPermissionService.HasPermissionAsync(
                     User.FindFirst(Constants.Jwt.UserIdClaim)!.Value,
                     Constants.Permissions.Read, cancel))
                 {
-                    return Ok(await _userService.FindAllAsync(cancel));
-                }
-                else
-                {
-                    return Forbid("You do not have permission to read this resource.");
-                }
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, 
-                    $"An unexpected error occurred. Please try again later. {ex.Message}");
-            }
-        }
-
-        [HttpGet("find-by-id/{id}")]
-        [Authorize]
-        public async Task<IActionResult> FindOne([FromRoute] int id, CancellationToken cancel)
-        {
-            try
-            {
-                if (await _hasPermissionService.HasPermissionAsync(
-                    User.FindFirst(Constants.Jwt.UserIdClaim)!.Value,
-                    Constants.Permissions.Read, cancel))
-                {
-                    return Ok(await _userService.FindOneAsync(id, cancel));
+                    return Ok(await _permissionService.FindOneAsync(id, cancel));
                 }
                 else
                 {
@@ -92,42 +98,14 @@ namespace LatinJobs.Api.Controllers
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                    $"An unexpected error occurred. Please try again later. {ex.Message}");
-            }
-        }
-
-        [HttpGet("find-by-email/{email}")]
-        [Authorize]
-        public async Task<IActionResult> FindOneByEmail([FromRoute] string email, CancellationToken cancel)
-        {
-            try
-            {
-                if (await _hasPermissionService.HasPermissionAsync(
-                    User.FindFirst(Constants.Jwt.UserIdClaim)!.Value,
-                    Constants.Permissions.Read, cancel))
-                {
-                    return Ok(await _userService.FindOneByEmailAsync(email, cancel));
-                }
-                else
-                {
-                    return Forbid("You do not have permission to read this resource.");
-                }
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    $"An unexpected error occurred. Please try again later. {ex.Message}");
+                 $"An unexpected error occurred. Please try again later. {ex.Message}");
             }
         }
 
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> Update([FromBody] UpdateUserDto updateUserDto, CancellationToken cancel)
-        { 
+        public async Task<IActionResult?> Update([FromBody] UpdatePermissionDto udatePermissionDto, CancellationToken cancel)
+        {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -135,14 +113,14 @@ namespace LatinJobs.Api.Controllers
             try
             {
                 if (await _hasPermissionService.HasPermissionAsync(
-                    User.FindFirst(Constants.Jwt.UserIdClaim)!.Value, 
+                    User.FindFirst(Constants.Jwt.UserIdClaim)!.Value,
                     Constants.Permissions.Edit, cancel))
                 {
-                    return Ok(await _userService.UpdateAsync(updateUserDto, cancel));
+                    return Ok(await _permissionService.UpdateAsync(udatePermissionDto, cancel));
                 }
                 else
                 {
-                    return Forbid("You do not have permission to update this resource.");
+                    return Forbid("You do not have permission to update a permission.");
                 }
             }
             catch (NotFoundException ex)
@@ -151,8 +129,8 @@ namespace LatinJobs.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, 
-                    $"An unexpected error occurred. Please try again later. {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                 $"An unexpected error occurred. Please try again later. {ex.Message}");
             }
         }
 
@@ -163,14 +141,14 @@ namespace LatinJobs.Api.Controllers
             try
             {
                 if (await _hasPermissionService.HasPermissionAsync(
-                    User.FindFirst(Constants.Jwt.UserIdClaim)!.Value, 
+                    User.FindFirst(Constants.Jwt.UserIdClaim)!.Value,
                     Constants.Permissions.Delete, cancel))
                 {
-                    return Ok(await _userService.SoftDeleteAsync(id, cancel));
+                    return Ok(await _permissionService.SoftDelete(id, cancel));
                 }
                 else
                 {
-                    return Forbid("You do not have permission to delete this resource.");
+                    return Forbid("You do not have permission to delete a permission.");
                 }
             }
             catch (NotFoundException ex)
@@ -178,15 +156,15 @@ namespace LatinJobs.Api.Controllers
                 return NotFound(ex.Message);
             }
             catch (Exception ex)
-            { 
-                return StatusCode(StatusCodes.Status500InternalServerError, 
-                    $"An unexpected error occurred. Please try again later. {ex.Message}"); 
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                 $"An unexpected error occurred. Please try again later. {ex.Message}");
             }
         }
 
         [HttpDelete("hard/{id}")]
         [Authorize]
-        public async Task<IActionResult?> Remove([FromRoute] int id, CancellationToken cancel)
+        public async Task<IActionResult> Remove([FromRoute] int id, CancellationToken cancel)
         {
             try
             {
@@ -194,11 +172,11 @@ namespace LatinJobs.Api.Controllers
                     User.FindFirst(Constants.Jwt.UserIdClaim)!.Value,
                     Constants.Permissions.Delete, cancel))
                 {
-                    return Ok(await _userService.RemoveAsync(id, cancel));
+                    return Ok(await _permissionService.RemoveAsync(id, cancel));
                 }
                 else
                 {
-                    return Forbid("You do not have permission to delete this resource.");
+                    return Forbid("You do not have permission to delete a permission.");
                 }
             }
             catch (NotFoundException ex)
@@ -207,8 +185,8 @@ namespace LatinJobs.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, 
-                    $"An unexpected error occurred. Please try again later. {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                 $"An unexpected error occurred. Please try again later. {ex.Message}");
             }
         }
     }

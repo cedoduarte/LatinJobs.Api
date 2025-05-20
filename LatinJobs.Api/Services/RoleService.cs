@@ -1,5 +1,6 @@
 ﻿using LatinJobs.Api.DTOs;
 using LatinJobs.Api.Entities;
+using LatinJobs.Api.Exceptions;
 using LatinJobs.Api.Repositories.Interfaces;
 using LatinJobs.Api.Services.Interfaces;
 using LatinJobs.Api.ViewModels;
@@ -44,7 +45,7 @@ namespace LatinJobs.Api.Services
             var role = await _roleRepository.FindOneAsync(id, cancel);
             if (role is null)
             {
-                return null;
+                throw new NotFoundException($"Role Not Found, ID = {id}");
             }
 
             return new RoleViewModel
@@ -59,7 +60,7 @@ namespace LatinJobs.Api.Services
             var role = await _roleRepository.FindOneAsync(name, cancel);
             if (role is null)
             {
-                return null;
+                throw new NotFoundException($"Role Not Found, Name = {name}");
             }
 
             return new RoleViewModel
@@ -80,7 +81,7 @@ namespace LatinJobs.Api.Services
             var updatedRole = await _roleRepository.UpdateAsync(existingRole, cancel);
             if (updatedRole is null)
             {
-                return null;
+                throw new NotFoundException($"Role Not Found, ID = {existingRole.Id}");
             }
 
             return new RoleViewModel
@@ -95,7 +96,7 @@ namespace LatinJobs.Api.Services
             var softDeletedRole = await _roleRepository.SoftDelete(id, cancel);
             if (softDeletedRole is null)
             {
-                return null;
+                throw new NotFoundException($"Role Not Found, ID = {id}");
             }
 
             return new RoleViewModel
@@ -110,7 +111,7 @@ namespace LatinJobs.Api.Services
             var removedRole = await _roleRepository.RemoveAsync(id, cancel);
             if (removedRole is null)
             {
-                return null;
+                throw new NotFoundException($"Role Not Found, ID = {id}");
             }
 
             return new RoleViewModel

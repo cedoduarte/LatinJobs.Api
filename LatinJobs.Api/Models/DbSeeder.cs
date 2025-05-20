@@ -1,6 +1,5 @@
 ﻿using LatinJobs.Api.Entities;
 using LatinJobs.Api.Shared;
-using LatinJobs.Api.Util;
 
 namespace LatinJobs.Api.Models
 {
@@ -154,35 +153,35 @@ namespace LatinJobs.Api.Models
                     new User()
                     {
                         Email = "carlosduarte.1@hotmail.com",
-                        PasswordHash = AppUtil.ToSha256(Constants.DefaultUserPassword),
+                        PasswordHash = Utils.GetSha256Hash(Constants.DefaultUserPassword),
                         FirstName = "Carlos Enrique",
                         LastName = "Duarte Ortiz"
                     },
                     new User()
                     {
                         Email = "ana@hotmail.com",
-                        PasswordHash = AppUtil.ToSha256(Constants.DefaultUserPassword),
+                        PasswordHash = Utils.GetSha256Hash(Constants.DefaultUserPassword),
                         FirstName = "Ana",
                         LastName = "López"
                     },
                     new User()
                     {
                         Email = "rosa@hotmail.com",
-                        PasswordHash = AppUtil.ToSha256(Constants.DefaultUserPassword),
+                        PasswordHash = Utils.GetSha256Hash(Constants.DefaultUserPassword),
                         FirstName = "Rosa",
                         LastName = "Avellaneda"
                     },
                     new User()
                     {
                         Email = "luis@hotmail.com",
-                        PasswordHash = AppUtil.ToSha256(Constants.DefaultUserPassword),
+                        PasswordHash = Utils.GetSha256Hash(Constants.DefaultUserPassword),
                         FirstName = "Luis",
                         LastName = "Fernández"
                     },
                     new User()
                     {
                         Email = "antonio@hotmail.com",
-                        PasswordHash = AppUtil.ToSha256(Constants.DefaultUserPassword),
+                        PasswordHash = Utils.GetSha256Hash(Constants.DefaultUserPassword),
                         FirstName = "Antonio",
                         LastName = "Guajardo"
                     }

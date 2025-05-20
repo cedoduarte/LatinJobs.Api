@@ -72,6 +72,7 @@ namespace LatinJobs.Api.Repositories
                 return null;
             }
 
+            existingRole.IsDeleted = true;
             existingRole.Deleted = DateTime.UtcNow;
             await _context.SaveChangesAsync(cancel);
             return existingRole;

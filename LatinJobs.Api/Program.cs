@@ -83,9 +83,19 @@ namespace LatinJobs.Api
             builder.Services.AddTransient<IUserRepository, UserRepository>();
             builder.Services.AddTransient<IRoleRepository, RoleRepository>();
             builder.Services.AddTransient<IUserRoleRepository, UserRoleRepository>();
+            builder.Services.AddTransient<IPermissionRepository, PermissionRepository>();
+            builder.Services.AddTransient<IRolePermissionRepository, RolePermissionRepository>();
+            builder.Services.AddTransient<IUserAuthenticationRepository, UserAuthenticationRepository>();
 
             // Services
+            builder.Services.AddTransient<IJwtService, JwtService>();
+            builder.Services.AddTransient<IHasPermissionService, HasPermissionService>();
             builder.Services.AddTransient<IUserService, UserService>();
+            builder.Services.AddTransient<IRoleService, RoleService>();
+            builder.Services.AddTransient<IUserRoleService, UserRoleService>();
+            builder.Services.AddTransient<IPermissionService, PermissionService>();
+            builder.Services.AddTransient<IRolePermissionService, RolePermissionService>();
+            builder.Services.AddTransient<IUserAuthenticationService, UserAuthenticationService>();
 
             // DB Context
             builder.Services.AddDbContext<IAppDbContext, AppDbContext>(options => 

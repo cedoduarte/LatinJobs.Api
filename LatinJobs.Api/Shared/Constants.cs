@@ -5,6 +5,12 @@
         public const string ConnectionStringName = "DefaultConnection";
         public const string DefaultUserPassword = "12345678";
 
+        public static class Jwt
+        {
+            public const string UserIdClaim = "UserId";
+            public const int TokenExpirationSeconds = 86400; // 24 hours
+        }
+
         public static class Permissions
         {
             public const string Write = "write";

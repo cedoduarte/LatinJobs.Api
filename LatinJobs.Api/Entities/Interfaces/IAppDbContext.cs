@@ -4,7 +4,7 @@ namespace LatinJobs.Api.Entities.Interfaces
 {
     public interface IAppDbContext
     {
-        DbSet<Authentication> Authentications { get; }
+        DbSet<UserAuthentication> Authentications { get; }
         DbSet<Permission> Permissions { get; }
         DbSet<Role> Roles { get; }
         DbSet<RolePermission> RolePermissions { get; }

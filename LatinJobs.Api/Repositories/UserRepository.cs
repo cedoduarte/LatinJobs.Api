@@ -1,7 +1,6 @@
 ﻿using LatinJobs.Api.Entities;
 using LatinJobs.Api.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
 
 namespace LatinJobs.Api.Repositories
 {
@@ -32,6 +31,14 @@ namespace LatinJobs.Api.Repositories
         {
             return await _context.Users
                 .Where(u => u.Id == id)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(cancel);
+        }
+
+        public async Task<User?> FindOneByEmail(string email, CancellationToken cancel)
+        {
+            return await _context.Users
+                .Where(u => string.Equals(u.Email, email))
                 .AsNoTracking()
                 .FirstOrDefaultAsync(cancel);
         }
@@ -68,6 +75,7 @@ namespace LatinJobs.Api.Repositories
                 return null;
             }
 
+            existingUser.IsDeleted = true;
             existingUser.Deleted = DateTime.UtcNow;
             await _context.SaveChangesAsync(cancel);
             return existingUser;

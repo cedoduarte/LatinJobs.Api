@@ -2,7 +2,7 @@
 
 namespace LatinJobs.Api.Entities
 {
-    public class Authentication
+    public class UserAuthentication
     {
         [Key]
         public int Id { get; set; }
