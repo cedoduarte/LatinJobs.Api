@@ -10,40 +10,34 @@ namespace LatinJobs.Api.Services
 {
     public class UserRoleService : IUserRoleService
     {
-        private readonly IUserRoleRepository _userRoleRepository;
-        private readonly IUserRepository _userRepository;
-        private readonly IRoleRepository _roleRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public UserRoleService(IUserRoleRepository userRoleRepository,
-            IUserRepository userRepository,
-            IRoleRepository roleRepository)
+        public UserRoleService(IUnitOfWork unitOfWork)
         {
-            _userRoleRepository = userRoleRepository;
-            _userRepository = userRepository;
-            _roleRepository = roleRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<UserRoleViewModel> CreateAsync(CreateUserRoleDto createUserRoleDto, CancellationToken cancel)
         {
-            var existingUserRole = await _userRoleRepository.FindOneByUserIdAsync(createUserRoleDto.UserId ?? 0, cancel);
+            var existingUserRole = await _unitOfWork.UserRoleRepository.FindOneByUserIdAsync(createUserRoleDto.UserId ?? 0, cancel);
             if (existingUserRole is not null)
             {
                 throw new AlreadyExistsException("The specified User already has a role");
             }
 
-            var foundUser = await _userRepository.FindOneAsync(createUserRoleDto.UserId ?? 0, cancel);
+            var foundUser = await _unitOfWork.UserRepository.FindOneAsync(createUserRoleDto.UserId ?? 0, cancel);
             if (foundUser is null)
             {
                 throw new NotFoundException($"User Not Found, ID = {createUserRoleDto.UserId}");
             }
 
-            var foundRole = await _roleRepository.FindOneAsync(createUserRoleDto.RoleId ?? 0, cancel);
+            var foundRole = await _unitOfWork.RoleRepository.FindOneAsync(createUserRoleDto.RoleId ?? 0, cancel);
             if (foundRole is null)
             {
                 throw new NotFoundException($"Role Not Found, ID = {createUserRoleDto.RoleId}");
             }
 
-            var createdUserRole = await _userRoleRepository.CreateAsync(new UserRole
+            var createdUserRole = await _unitOfWork.UserRoleRepository.CreateAsync(new UserRole
             {
                 UserId = foundUser.Id,
                 RoleId = foundRole.Id
@@ -68,7 +62,7 @@ namespace LatinJobs.Api.Services
 
         public async Task<IEnumerable<UserRoleViewModel>> FindAllAsync(CancellationToken cancel)
         {
-            var userRoles = await _userRoleRepository.FindAllAsync(cancel);
+            var userRoles = await _unitOfWork.UserRoleRepository.FindAllAsync(cancel);
             return userRoles.Select(userRole => new UserRoleViewModel
             {
                 User = new UserViewModel
@@ -88,7 +82,7 @@ namespace LatinJobs.Api.Services
 
         public async Task<UserRoleViewModel?> FindOneByUserIdAsync(int userId, CancellationToken cancel)
         {
-            var userRole = await _userRoleRepository.FindOneByUserIdAsync(userId, cancel);
+            var userRole = await _unitOfWork.UserRoleRepository.FindOneByUserIdAsync(userId, cancel);
             if (userRole is null)
             {
                 throw new NotFoundException("User-Role Not Found");
@@ -113,13 +107,13 @@ namespace LatinJobs.Api.Services
 
         public async Task<UserRoleViewModel?> UpdateAsync(UpdateUserRoleDto updateUserRoleDto, CancellationToken cancel)
         {
-            var existingUser = await _userRepository.FindOneAsync(updateUserRoleDto.UserId ?? 0, cancel);
+            var existingUser = await _unitOfWork.UserRepository.FindOneAsync(updateUserRoleDto.UserId ?? 0, cancel);
             if (existingUser is null)
             {
                 throw new NotFoundException($"User Not Found, ID = {updateUserRoleDto.UserId ?? 0}");
             }
 
-            var existingRole = await _roleRepository.FindOneAsync(updateUserRoleDto.RoleId ?? 0, cancel);
+            var existingRole = await _unitOfWork.RoleRepository.FindOneAsync(updateUserRoleDto.RoleId ?? 0, cancel);
             if (existingRole is null)
             {
                 throw new NotFoundException($"Role Not Found, ID = {updateUserRoleDto.RoleId ?? 0}");
@@ -132,7 +126,7 @@ namespace LatinJobs.Api.Services
                 RoleId = updateUserRoleDto.RoleId ?? 0
             };
 
-            var updatedUserRole = await _userRoleRepository.UpdateAsync(existingUserRole, cancel);
+            var updatedUserRole = await _unitOfWork.UserRoleRepository.UpdateAsync(existingUserRole, cancel);
             if (updatedUserRole is null)
             {
                 throw new NotFoundException("User-Role Not Found");
@@ -157,7 +151,7 @@ namespace LatinJobs.Api.Services
 
         public async Task<UserRoleViewModel?> RemoveByUserIdAsync(int userId, CancellationToken cancel)
         {
-            var removedUserRole = await _userRoleRepository.RemoveByUserIdAsync(userId, cancel);
+            var removedUserRole = await _unitOfWork.UserRoleRepository.RemoveByUserIdAsync(userId, cancel);
             if (removedUserRole is null)
             {
                 throw new NotFoundException("User-Role Not Found");

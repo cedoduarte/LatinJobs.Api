@@ -10,23 +10,18 @@ namespace LatinJobs.Api.Services
 {
     public class UserAuthenticationService : IUserAuthenticationService
     {
-        private readonly IUserAuthenticationRepository _userAuthenticationRepository;
-        private readonly IUserRepository _userRepository; 
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IJwtService _jwtService;
 
-        public UserAuthenticationService(
-            IUserAuthenticationRepository userAuthenticationRepository,
-            IUserRepository userRepository,
-            IJwtService jwtService)
+        public UserAuthenticationService(IUnitOfWork unitOfWork, IJwtService jwtService)
         {
-            _userAuthenticationRepository = userAuthenticationRepository;
-            _userRepository = userRepository;
+            _unitOfWork = unitOfWork;
             _jwtService = jwtService;
         }
 
         public async Task<UserAuthenticationViewModel> CreateAsync(CreateUserAuthenticationDto createAuthenticationDto, CancellationToken cancel)
         {
-            var foundUser = await _userRepository.FindOneByEmail(createAuthenticationDto.Email!, cancel);
+            var foundUser = await _unitOfWork.UserRepository.FindOneByEmail(createAuthenticationDto.Email!, cancel);
             
             if (foundUser is null)
             {
@@ -38,7 +33,7 @@ namespace LatinJobs.Api.Services
                 throw new UnauthorizedException("Invalid Password");
             }
 
-            var authentication = await _userAuthenticationRepository.CreateAsync(new UserAuthentication
+            var authentication = await _unitOfWork.UserAuthenticationRepository.CreateAsync(new UserAuthentication
             {
                 UserId = foundUser.Id,
                 Date = DateTime.UtcNow
@@ -55,7 +50,7 @@ namespace LatinJobs.Api.Services
 
         public async Task<IEnumerable<UserAuthenticatedDto>> FindAllAsync(CancellationToken cancel)
         {
-            var authentications = await _userAuthenticationRepository.FindAllAsync(cancel);
+            var authentications = await _unitOfWork.UserAuthenticationRepository.FindAllAsync(cancel);
             return authentications.Select(auth => new UserAuthenticatedDto 
             {
                 AuthenticationId = auth.Id,
@@ -66,7 +61,7 @@ namespace LatinJobs.Api.Services
 
         public async Task<IEnumerable<UserAuthenticatedDto>> FindByUserIdAsync(int userId, CancellationToken cancel)
         {
-            var authentication = await _userAuthenticationRepository.FindByUserIdAsync(userId, cancel);
+            var authentication = await _unitOfWork.UserAuthenticationRepository.FindByUserIdAsync(userId, cancel);
             return authentication.Select(auth => new UserAuthenticatedDto
             {
                 AuthenticationId = auth.Id,
@@ -77,7 +72,7 @@ namespace LatinJobs.Api.Services
 
         public async Task<UserAuthenticatedDto?> RemoveAsync(int id, CancellationToken cancel)
         {
-            var removedAuthentication = await _userAuthenticationRepository.RemoveAsync(id, cancel);
+            var removedAuthentication = await _unitOfWork.UserAuthenticationRepository.RemoveAsync(id, cancel);
             if (removedAuthentication is null)
             {
                 throw new NotFoundException($"Record Not Found");

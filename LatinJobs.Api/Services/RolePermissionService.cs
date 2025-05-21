@@ -12,12 +12,12 @@ namespace LatinJobs.Api.Services
     public class RolePermissionService : IRolePermissionService
     {
         private readonly AppDbContext _context;
-        private readonly IRolePermissionRepository _rolePermissionRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public RolePermissionService(AppDbContext context, IRolePermissionRepository rolePermissionRepository)
+        public RolePermissionService(AppDbContext context, IUnitOfWork unitOfWork)
         {
             _context = context;
-            _rolePermissionRepository = rolePermissionRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<RolePermissionViewModel> CreateAsync(CreateRolePermissionDto createRolePermissionDto, CancellationToken cancel)
@@ -59,7 +59,7 @@ namespace LatinJobs.Api.Services
                 PermissionId = createRolePermissionDto.PermissionId ?? 0
             };
 
-            var createdRolePermission = await _rolePermissionRepository.CreateAsync(newRolePermission, cancel);
+            var createdRolePermission = await _unitOfWork.RolePermissionRepository.CreateAsync(newRolePermission, cancel);
 
             var fullRolePermission = await _context.RolePermissions
                 .Where(x => x.Id == createdRolePermission!.Id)
@@ -107,7 +107,7 @@ namespace LatinJobs.Api.Services
                 throw new NotFoundException($"Role-Permission Not Found");
             }
 
-            await _rolePermissionRepository.RemoveAsync(foundRolePermission.Id, cancel);
+            await _unitOfWork.RolePermissionRepository.RemoveAsync(foundRolePermission.Id, cancel);
             return foundRolePermission.Adapt<RolePermissionViewModel>();
         }
     }

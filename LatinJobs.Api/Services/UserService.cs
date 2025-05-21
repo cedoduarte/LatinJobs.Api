@@ -12,27 +12,21 @@ namespace LatinJobs.Api.Services
 {
     public class UserService : IUserService
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IRoleRepository _roleRepository;
-        private readonly IUserRoleRepository _userRoleRepository;
-        public UserService(IUserRepository userRepository,
-            IRoleRepository roleRepository,
-            IUserRoleRepository userRoleRepository)
+        private readonly IUnitOfWork _unitOfWork;
+        public UserService(IUnitOfWork unitOfWork)
         {
-            _userRepository = userRepository;
-            _roleRepository = roleRepository;
-            _userRoleRepository = userRoleRepository;
+            _unitOfWork = unitOfWork;
          }
 
         public async Task<UserViewModel> CreateAsync(CreateUserDto createUserDto, CancellationToken cancel)
         {
-            var foundRole = await _roleRepository.FindOneAsync(createUserDto.RoleId ?? 0, cancel);
+            var foundRole = await _unitOfWork.RoleRepository.FindOneAsync(createUserDto.RoleId ?? 0, cancel);
             if (foundRole is null)
             {
                 throw new NotFoundException($"Role Not Found, ID = {createUserDto.RoleId}");
             }
 
-            var createdUser = await _userRepository.CreateAsync(new User
+            var createdUser = await _unitOfWork.UserRepository.CreateAsync(new User
             {
                 Email = createUserDto.Email!.Trim(),
                 PasswordHash = Utils.GetSha256Hash(createUserDto.Password!.Trim()),
@@ -40,7 +34,7 @@ namespace LatinJobs.Api.Services
                 LastName = createUserDto.LastName!.Trim()
             }, cancel);
 
-            await _userRoleRepository.CreateAsync(new UserRole()
+            await _unitOfWork.UserRoleRepository.CreateAsync(new UserRole()
             {
                 UserId = createdUser!.Id,
                 RoleId = foundRole!.Id
@@ -51,12 +45,12 @@ namespace LatinJobs.Api.Services
 
         public async Task<PagedResult<UserViewModel>> FindAllAsync(PaginationParametersDto paginationParametersDto, CancellationToken cancel)
         {
-            return await _userRepository.FindAllAsync(paginationParametersDto, cancel);
+            return await _unitOfWork.UserRepository.FindAllAsync(paginationParametersDto, cancel);
         }
 
         public async Task<UserViewModel?> FindOneAsync(int id, CancellationToken cancel)
         {
-            var user = await _userRepository.FindOneAsync(id, cancel);
+            var user = await _unitOfWork.UserRepository.FindOneAsync(id, cancel);
             if (user is null)
             {
                 throw new NotFoundException($"User Not Found, ID = {id}");
@@ -66,7 +60,7 @@ namespace LatinJobs.Api.Services
 
         public async Task<UserViewModel?> FindOneByEmailAsync(string email, CancellationToken cancel)
         {
-            var user = await _userRepository.FindOneByEmail(email, cancel);
+            var user = await _unitOfWork.UserRepository.FindOneByEmail(email, cancel);
             if (user is null)
             {
                 throw new NotFoundException($"User Not Found, Email = {email}");
@@ -85,7 +79,7 @@ namespace LatinJobs.Api.Services
                 PasswordHash = Utils.GetSha256Hash(updateUserDto.Password!.Trim())
             };
 
-            var updatedUser = await _userRepository.UpdateAsync(existingUser, cancel);
+            var updatedUser = await _unitOfWork.UserRepository.UpdateAsync(existingUser, cancel);
             if (updatedUser is null)
             {
                 throw new NotFoundException($"User Not Found, ID = {updateUserDto.Id}");
@@ -95,7 +89,7 @@ namespace LatinJobs.Api.Services
 
         public async Task<UserViewModel?> SoftDeleteAsync(int id, CancellationToken cancel)
         {
-            var softDeletedUser = await _userRepository.SoftDelete(id, cancel);
+            var softDeletedUser = await _unitOfWork.UserRepository.SoftDelete(id, cancel);
             if (softDeletedUser is null)
             {
                 throw new NotFoundException($"User Not Found, ID = {id}");
@@ -105,7 +99,7 @@ namespace LatinJobs.Api.Services
 
         public async Task<UserViewModel?> RemoveAsync(int id, CancellationToken cancel)
         {
-            var removedUser = await _userRepository.RemoveAsync(id, cancel);
+            var removedUser = await _unitOfWork.UserRepository.RemoveAsync(id, cancel);
             if (removedUser is null)
             {
                 throw new NotFoundException($"User Not Found, ID = {id}");

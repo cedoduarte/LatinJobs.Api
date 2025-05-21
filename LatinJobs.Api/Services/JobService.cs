@@ -11,16 +11,16 @@ namespace LatinJobs.Api.Services
 {
     public class JobService : IJobService
     {
-        private readonly IJobRepository _jobRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public JobService(IJobRepository jobRepository)
+        public JobService(IUnitOfWork unitOfWork)
         {
-            _jobRepository = jobRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<JobViewModel> CreateAsync(CreateJobDto createJobDto, CancellationToken cancel)
         {
-            var createdJob = await _jobRepository.CreateAsync(new Job
+            var createdJob = await _unitOfWork.JobRepository.CreateAsync(new Job
             {
                 Title = createJobDto.Title!.Trim(),
                 Description = createJobDto.Description!.Trim(),
@@ -39,12 +39,12 @@ namespace LatinJobs.Api.Services
 
         public async Task<PagedResult<JobViewModel>> FindAllAsync(PaginationParametersDto paginationParametersDto, CancellationToken cancel)
         {
-            return await _jobRepository.FindAllAsync(paginationParametersDto, cancel);
+            return await _unitOfWork.JobRepository.FindAllAsync(paginationParametersDto, cancel);
         }
 
         public async Task<JobViewModel?> FindOneAsync(int id, CancellationToken cancel)
         {
-            var job = await _jobRepository.FindOneAsync(id, cancel);
+            var job = await _unitOfWork.JobRepository.FindOneAsync(id, cancel);
             if (job is null)
             {
                 throw new NotFoundException($"Job Not Found, ID = {id}");
@@ -69,7 +69,7 @@ namespace LatinJobs.Api.Services
                 UserId = updateJobDto.UserId
             };
 
-            var updatedJob = await _jobRepository.UpdateAsync(existingJob, cancel);
+            var updatedJob = await _unitOfWork.JobRepository.UpdateAsync(existingJob, cancel);
             if (updatedJob is null)
             {
                 throw new NotFoundException($"Job Not Found, ID = {updateJobDto.Id}");
@@ -80,7 +80,7 @@ namespace LatinJobs.Api.Services
 
         public async Task<JobViewModel?> SoftDeleteAsync(int id, CancellationToken cancel)
         {
-            var softDeletedJob = await _jobRepository.SoftDelete(id, cancel);
+            var softDeletedJob = await _unitOfWork.JobRepository.SoftDelete(id, cancel);
             if (softDeletedJob is null)
             {
                 throw new NotFoundException($"Job Not Found, ID = {id}");
@@ -90,7 +90,7 @@ namespace LatinJobs.Api.Services
 
         public async Task<JobViewModel?> RemoveAsync(int id, CancellationToken cancel)
         {
-            var removedJob = await _jobRepository.RemoveAsync(id, cancel);
+            var removedJob = await _unitOfWork.JobRepository.RemoveAsync(id, cancel);
             if (removedJob is null)
             {
                 throw new NotFoundException($"Job Not Found, ID = {id}");

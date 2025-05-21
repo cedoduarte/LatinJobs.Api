@@ -10,16 +10,16 @@ namespace LatinJobs.Api.Services
 {
     public class PermissionService : IPermissionService
     {
-        private readonly IPermissionRepository _permissionRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public PermissionService(IPermissionRepository permissionRepository)
+        public PermissionService(IUnitOfWork unitOfWork)
         {
-            _permissionRepository = permissionRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<PermissionViewModel> CreateAsync(CreatePermissionDto createPermissionDto, CancellationToken cancel)
         {
-            var createdPermission = await _permissionRepository.CreateAsync(new Permission
+            var createdPermission = await _unitOfWork.PermissionRepository.CreateAsync(new Permission
             {
                 Name = createPermissionDto.Name!.Trim()
             }, cancel);
@@ -28,13 +28,13 @@ namespace LatinJobs.Api.Services
 
         public async Task<IEnumerable<PermissionViewModel>> FindAllAsync(CancellationToken cancel)
         {
-            var permissions = await _permissionRepository.FindAllAsync(cancel);
+            var permissions = await _unitOfWork.PermissionRepository.FindAllAsync(cancel);
             return permissions.Adapt<IEnumerable<PermissionViewModel>>();
         }
 
         public async Task<PermissionViewModel?> FindOneAsync(int id, CancellationToken cancel)
         {
-            var permission = await _permissionRepository.FindOneAsync(id, cancel);
+            var permission = await _unitOfWork.PermissionRepository.FindOneAsync(id, cancel);
             if (permission is null)
             {
                 throw new NotFoundException($"Permission Not Found, ID = {id}");
@@ -50,7 +50,7 @@ namespace LatinJobs.Api.Services
                 Name = udatePermissionDto.Name!.Trim()
             };
 
-            var updatedPermission = await _permissionRepository.UpdateAsync(existingPermission, cancel);
+            var updatedPermission = await _unitOfWork.PermissionRepository.UpdateAsync(existingPermission, cancel);
             if (updatedPermission is null)
             {
                 throw new NotFoundException($"Permission Not Found, ID = {udatePermissionDto.Id}");
@@ -60,7 +60,7 @@ namespace LatinJobs.Api.Services
 
         public async Task<PermissionViewModel?> SoftDeleteAsync(int id, CancellationToken cancel)
         {
-            var softDeletedPermission = await _permissionRepository.SoftDelete(id, cancel);
+            var softDeletedPermission = await _unitOfWork.PermissionRepository.SoftDelete(id, cancel);
             if (softDeletedPermission is null)
             {
                 throw new NotFoundException($"Permission Not Found, ID = {id}");
@@ -70,7 +70,7 @@ namespace LatinJobs.Api.Services
 
         public async Task<PermissionViewModel?> RemoveAsync(int id, CancellationToken cancel)
         {
-            var removedPermission = await _permissionRepository.RemoveAsync(id, cancel);
+            var removedPermission = await _unitOfWork.PermissionRepository.RemoveAsync(id, cancel);
             if (removedPermission is null)
             {
                 throw new NotFoundException($"Permission Not Found, ID = {id}");

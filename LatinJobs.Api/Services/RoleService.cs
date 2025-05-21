@@ -10,16 +10,16 @@ namespace LatinJobs.Api.Services
 {
     public class RoleService : IRoleService
     {
-        private readonly IRoleRepository _roleRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public RoleService(IRoleRepository roleRepository)
+        public RoleService(IUnitOfWork unitOfWork)
         {
-            _roleRepository = roleRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<RoleViewModel> CreateAsync(CreateRoleDto createRoleDto, CancellationToken cancel)
         {
-            var createdRole = await _roleRepository.CreateAsync(new Role
+            var createdRole = await _unitOfWork.RoleRepository.CreateAsync(new Role
             {
                 Name = createRoleDto.Name!.Trim()
             }, cancel);
@@ -28,13 +28,13 @@ namespace LatinJobs.Api.Services
 
         public async Task<IEnumerable<RoleViewModel>> FindAllAsync(CancellationToken cancel)
         {
-            var roles = await _roleRepository.FindAllAsync(cancel);
+            var roles = await _unitOfWork.RoleRepository.FindAllAsync(cancel);
             return roles.Adapt<IEnumerable<RoleViewModel>>();
         }
 
         public async Task<RoleViewModel?> FindOneAsync(int id, CancellationToken cancel)
         {
-            var role = await _roleRepository.FindOneAsync(id, cancel);
+            var role = await _unitOfWork.RoleRepository.FindOneAsync(id, cancel);
             if (role is null)
             {
                 throw new NotFoundException($"Role Not Found, ID = {id}");
@@ -44,7 +44,7 @@ namespace LatinJobs.Api.Services
 
         public async Task<RoleViewModel?> FindOneByNameAsync(string name, CancellationToken cancel)
         {
-            var role = await _roleRepository.FindOneAsync(name, cancel);
+            var role = await _unitOfWork.RoleRepository.FindOneAsync(name, cancel);
             if (role is null)
             {
                 throw new NotFoundException($"Role Not Found, Name = {name}");
@@ -60,7 +60,7 @@ namespace LatinJobs.Api.Services
                 Name = updateRoleDto.Name!.Trim()
             };
 
-            var updatedRole = await _roleRepository.UpdateAsync(existingRole, cancel);
+            var updatedRole = await _unitOfWork.RoleRepository.UpdateAsync(existingRole, cancel);
             if (updatedRole is null)
             {
                 throw new NotFoundException($"Role Not Found, ID = {existingRole.Id}");
@@ -71,7 +71,7 @@ namespace LatinJobs.Api.Services
 
         public async Task<RoleViewModel?> SoftDeleteAsync(int id, CancellationToken cancel)
         {
-            var softDeletedRole = await _roleRepository.SoftDelete(id, cancel);
+            var softDeletedRole = await _unitOfWork.RoleRepository.SoftDelete(id, cancel);
             if (softDeletedRole is null)
             {
                 throw new NotFoundException($"Role Not Found, ID = {id}");
@@ -81,7 +81,7 @@ namespace LatinJobs.Api.Services
 
         public async Task<RoleViewModel?> RemoveAsync(int id, CancellationToken cancel)
         {
-            var removedRole = await _roleRepository.RemoveAsync(id, cancel);
+            var removedRole = await _unitOfWork.RoleRepository.RemoveAsync(id, cancel);
             if (removedRole is null)
             {
                 throw new NotFoundException($"Role Not Found, ID = {id}");

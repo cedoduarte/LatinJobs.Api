@@ -84,6 +84,7 @@ namespace LatinJobs.Api
             MappingConfig.RegisterMappings();
 
             // Repositories
+            builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
             builder.Services.AddTransient<IUserRepository, UserRepository>();
             builder.Services.AddTransient<IRoleRepository, RoleRepository>();
             builder.Services.AddTransient<IUserRoleRepository, UserRoleRepository>();
