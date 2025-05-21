@@ -36,7 +36,7 @@ namespace LatinJobs.Api.Controllers
             }
             catch (UnauthorizedException ex)
             {
-                return Forbid(ex.Message);
+                return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
             }
             catch (NotFoundException ex)
             {
