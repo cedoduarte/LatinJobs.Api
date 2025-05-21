@@ -12,8 +12,46 @@ namespace LatinJobs.Api.Models
             SeedPermissions(dbContext);
             SeedUserRoles(dbContext);
             SeedRolePermissions(dbContext);
+            SeedJobs(dbContext);
         }
 
+        private static void SeedJobs(AppDbContext dbContext)
+        {
+            if (!dbContext.Jobs.Any())
+            {
+                dbContext.Jobs.AddRange(new Job[]
+                {
+                    new Job()
+                    {
+                        Title = "Software Engineer",
+                        Description = "Develop and maintain software applications.",
+                        Location = "Remote",
+                        Company = "Tech Corp",
+                        EmploymentType = "Fulltime",
+                        Salary = "80000",
+                        PostedDate = DateTime.UtcNow,
+                        CompanyUrl = "https://www.duartecorp.com",
+                        CompanyLogo = "none",
+                        UserId = 1
+                    },
+                    new Job()
+                    {
+                        Title = "Data Analyst",
+                        Description = "Analyze data to provide insights.",
+                        Location = "On-site",
+                        Company = "Data Inc",
+                        EmploymentType = "Fulltime",
+                        Salary = "70000",
+                        PostedDate = DateTime.UtcNow,
+                        CompanyUrl = "https://www.duartecorp.com",
+                        CompanyLogo = "none",
+                        UserId = 1
+                    }
+                });
+                dbContext.SaveChanges();
+            }
+        }
+        
         private static void SeedRolePermissions(AppDbContext dbContext)
         {
             if (!dbContext.RolePermissions.Any())

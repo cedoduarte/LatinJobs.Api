@@ -1,6 +1,7 @@
 ﻿using LatinJobs.Api.DTOs;
 using LatinJobs.Api.Entities;
 using LatinJobs.Api.Exceptions;
+using LatinJobs.Api.Pagination;
 using LatinJobs.Api.Repositories.Interfaces;
 using LatinJobs.Api.Services.Interfaces;
 using LatinJobs.Api.Shared;
@@ -48,10 +49,9 @@ namespace LatinJobs.Api.Services
             return createdUser.Adapt<UserViewModel>();
         }
 
-        public async Task<IEnumerable<UserViewModel>> FindAllAsync(CancellationToken cancel)
+        public async Task<PagedResult<UserViewModel>> FindAllAsync(PaginationParametersDto paginationParametersDto, CancellationToken cancel)
         {
-            var users = await _userRepository.FindAllAsync(cancel);
-            return users.Adapt<IEnumerable<UserViewModel>>();
+            return await _userRepository.FindAllAsync(paginationParametersDto, cancel);
         }
 
         public async Task<UserViewModel?> FindOneAsync(int id, CancellationToken cancel)

@@ -46,7 +46,7 @@ namespace LatinJobs.Api.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> FindAll(CancellationToken cancel)
+        public async Task<IActionResult> FindAll([FromQuery] PaginationParametersDto paginationParametersDto, CancellationToken cancel)
         {
             try 
             {
@@ -54,7 +54,7 @@ namespace LatinJobs.Api.Controllers
                     User.FindFirst(Constants.Jwt.UserIdClaim)!.Value,
                     Constants.Permissions.Read, cancel))
                 {
-                    return Ok(await _userService.FindAllAsync(cancel));
+                    return Ok(await _userService.FindAllAsync(paginationParametersDto, cancel));
                 }
                 else
                 {

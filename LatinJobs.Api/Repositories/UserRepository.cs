@@ -1,5 +1,9 @@
-﻿using LatinJobs.Api.Entities;
+﻿using LatinJobs.Api.DTOs;
+using LatinJobs.Api.Entities;
+using LatinJobs.Api.Pagination;
 using LatinJobs.Api.Repositories.Interfaces;
+using LatinJobs.Api.ViewModels;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
 
 namespace LatinJobs.Api.Repositories
@@ -20,11 +24,22 @@ namespace LatinJobs.Api.Repositories
             return newUser.Entity;
         }
 
-        public async Task<IEnumerable<User>> FindAllAsync(CancellationToken cancel)
+        public async Task<PagedResult<UserViewModel>> FindAllAsync(PaginationParametersDto paginationParametersDto,CancellationToken cancel)
         {
-            return await _context.Users
+            int totalCount = await _context.Users.CountAsync(cancel);
+
+            var users = await _context.Users
                 .AsNoTracking()
+                .Skip((paginationParametersDto.PageNumber - 1)
+                       * paginationParametersDto.PageSize)
+                .Take(paginationParametersDto.PageSize)
                 .ToListAsync(cancel);
+
+            return new PagedResult<UserViewModel>
+            {
+                TotalCount = totalCount,
+                Items = users.Adapt<IEnumerable<UserViewModel>>()
+            };
         }
 
         public async Task<User?> FindOneAsync(int id, CancellationToken cancel)
