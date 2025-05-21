@@ -42,7 +42,7 @@ namespace LatinJobs.Api.Services
             return role.Adapt<RoleViewModel>();
         }
 
-        public async Task<RoleViewModel?> FindOneAsync(string name, CancellationToken cancel)
+        public async Task<RoleViewModel?> FindOneByNameAsync(string name, CancellationToken cancel)
         {
             var role = await _roleRepository.FindOneAsync(name, cancel);
             if (role is null)

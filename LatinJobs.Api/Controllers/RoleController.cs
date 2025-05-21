@@ -104,7 +104,7 @@ namespace LatinJobs.Api.Controllers
 
         [HttpGet("name/{name}")]
         [Authorize]
-        public async Task<IActionResult> FindOne([FromRoute] string name, CancellationToken cancel)
+        public async Task<IActionResult> FindOneByName([FromRoute] string name, CancellationToken cancel)
         {
             try
             {
@@ -112,7 +112,7 @@ namespace LatinJobs.Api.Controllers
                     User.FindFirst(Constants.Jwt.UserIdClaim)!.Value,
                     Constants.Permissions.Read, cancel))
                 {
-                    return Ok(await _roleService.FindOneAsync(name, cancel));
+                    return Ok(await _roleService.FindOneByNameAsync(name, cancel));
                 }
                 else
                 {

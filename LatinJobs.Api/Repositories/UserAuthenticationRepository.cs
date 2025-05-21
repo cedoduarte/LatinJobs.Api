@@ -22,14 +22,14 @@ namespace LatinJobs.Api.Repositories
 
         public async Task<IEnumerable<UserAuthentication>> FindAllAsync(CancellationToken cancel)
         {
-            return await _context.Authentications
+            return await _context.UserAuthentications
                 .AsNoTracking()
                 .ToListAsync(cancel);
         }
 
         public async Task<IEnumerable<UserAuthentication>> FindByUserIdAsync(int userId, CancellationToken cancel)
         {
-            return await _context.Authentications
+            return await _context.UserAuthentications
                 .Where(a => a.UserId == userId)
                 .AsNoTracking()
                 .ToListAsync(cancel);
@@ -37,7 +37,7 @@ namespace LatinJobs.Api.Repositories
 
         public async Task<UserAuthentication?> RemoveAsync(int id, CancellationToken cancel)
         {
-            var foundAuthentication = await _context.Authentications
+            var foundAuthentication = await _context.UserAuthentications
                 .Where(a => a.Id == id)
                 .FirstOrDefaultAsync(cancel);
 
@@ -46,7 +46,7 @@ namespace LatinJobs.Api.Repositories
                 return null;
             }
 
-            _context.Authentications.Remove(foundAuthentication);
+            _context.UserAuthentications.Remove(foundAuthentication);
             await _context.SaveChangesAsync(cancel);
             return foundAuthentication;
         }

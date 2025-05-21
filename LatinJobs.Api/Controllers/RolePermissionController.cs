@@ -2,6 +2,7 @@
 using LatinJobs.Api.Exceptions;
 using LatinJobs.Api.Services.Interfaces;
 using LatinJobs.Api.Shared;
+using LatinJobs.Api.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -79,6 +80,34 @@ namespace LatinJobs.Api.Controllers
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, 
+                    $"An unexpected error occurred. Please try again later. {ex.Message}");
+            }
+        }
+
+        [HttpGet("{roleId}")]
+        [Authorize]
+        public async Task<IActionResult> GetPermissions([FromRoute] int roleId, CancellationToken cancel)
+        {
+            try
+            {
+                if (await _hasPermissionService.HasPermissionAsync(
+                    User.FindFirst(Constants.Jwt.UserIdClaim)!.Value,
+                    Constants.Permissions.Read, cancel))
+                {
+                    return Ok(await _rolePermissionService.GetPermissions(roleId, cancel));
+                }
+                else
+                {
+                    return Forbid("You do not have permission to view role permissions.");
+                }
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
                     $"An unexpected error occurred. Please try again later. {ex.Message}");
             }
         }

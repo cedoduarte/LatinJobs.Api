@@ -10,7 +10,7 @@ namespace LatinJobs.Api.Services.Interfaces
         Task<UserViewModel?> FindOneAsync(int id, CancellationToken cancel = default);
         Task<UserViewModel?> FindOneByEmailAsync(string email, CancellationToken cancel = default);
 
-        Task<UserViewModel?> UpdateAsync(UpdateUserDto user, CancellationToken cancel = default);
+        Task<UserViewModel?> UpdateAsync(UpdateUserDto updateUserDto, CancellationToken cancel = default);
         Task<UserViewModel?> SoftDeleteAsync(int id, CancellationToken cancel = default);
         Task<UserViewModel?> RemoveAsync(int id, CancellationToken cancel = default);
     }
