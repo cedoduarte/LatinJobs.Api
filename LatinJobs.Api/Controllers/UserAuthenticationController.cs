@@ -63,7 +63,7 @@ namespace LatinJobs.Api.Controllers
                 }
                 else
                 {
-                    return Forbid("You do not have permission to view user authentications.");
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to view user authentications.");
                 }
             }
             catch (Exception ex) 
@@ -87,7 +87,7 @@ namespace LatinJobs.Api.Controllers
                 }
                 else
                 {
-                    return Forbid("You do not have permission to view user authentications.");
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to view user authentications.");
                 }
             }
             catch (Exception ex) 
@@ -111,7 +111,7 @@ namespace LatinJobs.Api.Controllers
                 }
                 else
                 {
-                    return Forbid("You do not have permission to delete this resource.");
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to delete this resource.");
                 }
             }
             catch (Exception ex) 

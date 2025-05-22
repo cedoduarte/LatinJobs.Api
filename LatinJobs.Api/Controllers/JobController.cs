@@ -40,7 +40,7 @@ namespace LatinJobs.Api.Controllers
                 }
                 else
                 {
-                    return Forbid("You do not have permission to create a job.");
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to create a job.");
                 }
             }
             catch (Exception ex)
@@ -64,7 +64,7 @@ namespace LatinJobs.Api.Controllers
                 }
                 else 
                 {
-                    return Forbid("You do not have permission to read jobs.");
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to read jobs.");
                 }
             }
             catch (Exception ex)
@@ -88,7 +88,7 @@ namespace LatinJobs.Api.Controllers
                 }
                 else
                 {
-                    return Forbid("You do not have permission to read this job.");
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to read this job.");
                 }
             }
             catch (NotFoundException ex)
@@ -121,7 +121,7 @@ namespace LatinJobs.Api.Controllers
                 }
                 else
                 {
-                    return Forbid("You do not have permission to update this job.");
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to update this job.");
                 }
             }
             catch (NotFoundException ex)
@@ -149,7 +149,7 @@ namespace LatinJobs.Api.Controllers
                 }
                 else
                 {
-                    return Forbid("You do not have permission to delete this job.");
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to delete this job.");
                 }
             }
             catch (NotFoundException ex)
@@ -177,7 +177,7 @@ namespace LatinJobs.Api.Controllers
                 }
                 else
                 {
-                    return Forbid("You do not have permission to delete this job.");
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to delete this job.");
                 }
             }
             catch (NotFoundException ex)

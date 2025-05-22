@@ -42,7 +42,7 @@ namespace LatinJobs.Api.Controllers
                 }
                 else
                 {
-                    return Forbid();
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to create a role permission.");
                 }
             }
             catch (AlreadyExistsException ex)
@@ -74,7 +74,7 @@ namespace LatinJobs.Api.Controllers
                 }
                 else
                 {
-                    return Forbid("You do not have permission to view role permissions.");
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to view role permissions.");
                 }
             }
             catch (Exception ex)
@@ -98,7 +98,7 @@ namespace LatinJobs.Api.Controllers
                 }
                 else
                 {
-                    return Forbid("You do not have permission to view role permissions.");
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to view role permissions.");
                 }
             }
             catch (NotFoundException ex)
@@ -126,7 +126,7 @@ namespace LatinJobs.Api.Controllers
                 }
                 else
                 {
-                    return Forbid();
+                    return StatusCode(StatusCodes.Status403Forbidden, "User does not have permission to delete this role permission.");
                 }
             }
             catch (NotFoundException)

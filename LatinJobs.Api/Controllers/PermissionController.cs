@@ -40,7 +40,7 @@ namespace LatinJobs.Api.Controllers
                 }
                 else
                 {
-                    return Forbid("You do not have permission to create a permission.");
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to create a permission.");
                 }
             }
             catch (Exception ex)
@@ -64,7 +64,7 @@ namespace LatinJobs.Api.Controllers
                 }
                 else
                 {
-                    return Forbid("You do not have permission to read permissions.");
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to read permissions.");
                 }
             }
             catch (Exception ex)
@@ -88,7 +88,7 @@ namespace LatinJobs.Api.Controllers
                 }
                 else
                 {
-                    return Forbid("You do not have permission to read this resource.");
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to read this resource.");
                 }
             }
             catch (NotFoundException ex)
@@ -120,7 +120,7 @@ namespace LatinJobs.Api.Controllers
                 }
                 else
                 {
-                    return Forbid("You do not have permission to update a permission.");
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to update a permission.");
                 }
             }
             catch (NotFoundException ex)
@@ -148,7 +148,7 @@ namespace LatinJobs.Api.Controllers
                 }
                 else
                 {
-                    return Forbid("You do not have permission to delete a permission.");
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to delete a permission.");
                 }
             }
             catch (NotFoundException ex)
@@ -176,7 +176,7 @@ namespace LatinJobs.Api.Controllers
                 }
                 else
                 {
-                    return Forbid("You do not have permission to delete a permission.");
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to delete a permission.");
                 }
             }
             catch (NotFoundException ex)

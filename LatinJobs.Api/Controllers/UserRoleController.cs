@@ -2,7 +2,6 @@
 using LatinJobs.Api.Exceptions;
 using LatinJobs.Api.Services.Interfaces;
 using LatinJobs.Api.Shared;
-using LatinJobs.Api.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,7 +40,7 @@ namespace LatinJobs.Api.Controllers
                 }
                 else
                 {
-                    return Forbid("You do not have permission to create a user role.");
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to create a user role.");
                 }
             }
             catch (AlreadyExistsException ex)
@@ -73,7 +72,7 @@ namespace LatinJobs.Api.Controllers
                 }
                 else
                 {
-                    return Forbid("You do not have permission to read user roles.");
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to read user roles.");
                 }
             }
             catch (Exception ex)
@@ -97,7 +96,7 @@ namespace LatinJobs.Api.Controllers
                 }
                 else
                 {
-                    return Forbid("You do not have permission to read this user role.");
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to read this user role.");
                 }
             }
             catch (NotFoundException ex)
@@ -129,7 +128,7 @@ namespace LatinJobs.Api.Controllers
                 }
                 else
                 {
-                    return Forbid("You do not have permission to update this user role.");
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to update this user role.");
                 }
             }
             catch (NotFoundException ex)
@@ -157,7 +156,7 @@ namespace LatinJobs.Api.Controllers
                 }
                 else
                 {
-                    return Forbid("You do not have permission to delete this user role.");
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to delete this user role.");
                 }
             }
             catch (NotFoundException ex)
